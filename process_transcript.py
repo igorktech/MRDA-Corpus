@@ -1,7 +1,7 @@
 import re
 import gluonnlp as nlp
 # Initialise Spacy tokeniser
-tokeniser = nlp.data.SpacyTokenizer('en_core_web_sm')
+tokenizer = nlp.data.SpacyTokenizer('en_core_web_sm')
 
 
 class Dialogue:
@@ -16,12 +16,13 @@ class Dialogue:
 
 
 class Utterance:
-    def __init__(self, speaker, text, basic_da_label, general_da_label, full_da_label):
+    def __init__(self, speaker, text, basic_da_label, general_da_label, full_da_label, conversation_id):
         self.speaker = speaker
         self.text = text
         self.basic_da_label = basic_da_label
         self.general_da_label = general_da_label
         self.full_da_label = full_da_label
+        self.conversation_id = conversation_id
 
     def __str__(self):
         return str(self.speaker + " " +
@@ -51,7 +52,7 @@ def process_transcript(transcript, database, da_map, excluded_chars=None, exclud
         # Remove the word annotations and filter_disfluency
         utterance_text = []
         for word in utterance_tokens:
-            word = word.text
+            # word = word.text
             # If no excluded characters are present just add it
             if all(char not in excluded_chars for char in word):
                 utterance_text.append(word)
@@ -99,7 +100,7 @@ def process_transcript(transcript, database, da_map, excluded_chars=None, exclud
                 and full_da_tag.lower() not in excluded_tags:
 
             # Create Utterance and add to list
-            current_utt = Utterance(speaker, utterance_text, basic_da_tag, general_da_tag, full_da_tag)
+            current_utt = Utterance(speaker, utterance_text, basic_da_tag, general_da_tag, full_da_tag,  transcript[0].split('-')[0])
             utterances.append(current_utt)
 
     # Create Dialogue
